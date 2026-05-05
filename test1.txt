@@ -1,0 +1,273 @@
+You are an experienced Senior Java Backend Engineer and QA reviewer.
+
+Analyze and validate the following workflow implementation end-to-end, identify missing scenarios, improve the design, and suggest production-grade enhancements.
+
+## Existing Requirement
+
+Current flow:
+
+1. Fetch records from MongoDB where status is NOT_PROCESSED (or equivalent pending status).
+2. Pick records for processing.
+3. Download corresponding file from AWS S3.
+4. Decrypt the file.
+5. Extract all required/additional fields from the PDF.
+6. Publish/update processed data to Kafka.
+7. Update processing status in MongoDB.
+
+---
+
+## Your Tasks
+
+### 1. Verify Functional Completeness
+
+Review whether the following workflow is correctly designed and implemented:
+
+* MongoDB record polling/query
+* Record locking or concurrency handling
+* S3 file download
+* File validation
+* Decryption logic
+* PDF parsing and field extraction
+* Kafka message publishing
+* MongoDB status update
+* Retry handling
+* Logging and observability
+
+Identify:
+
+* Missing steps
+* Incorrect sequencing
+* Potential race conditions
+* Data consistency issues
+* Duplicate processing risks
+* Performance bottlenecks
+* Scalability concerns
+
+---
+
+## 2. Add Missing Production-Grade Enhancements
+
+Suggest improvements for:
+
+### MongoDB Processing
+
+* Atomic update while fetching record
+* Distributed locking
+* Batch processing
+* Parallel processing
+* Pagination
+* Idempotency handling
+* Retry counters
+* Dead-letter handling
+* Status lifecycle management
+
+Example statuses:
+
+* NOT_PROCESSED
+* IN_PROGRESS
+* RETRY
+* PROCESSED
+* FAILED
+* DLQ
+
+---
+
+### AWS S3 Handling
+
+Validate:
+
+* File existence
+* Empty file handling
+* Corrupted file handling
+* Timeout handling
+* Partial download failures
+* Unsupported file type
+* Retry logic
+* Temporary file cleanup
+
+---
+
+### Decryption Handling
+
+Validate:
+
+* Invalid encryption key
+* Corrupted encrypted file
+* Unsupported encryption format
+* Decryption timeout
+* Secure key management
+* Sensitive data masking in logs
+
+---
+
+### PDF Parsing & Extraction
+
+Validate:
+
+* Empty PDF
+* Password-protected PDF
+* Corrupted PDF
+* Multi-page extraction
+* OCR fallback if text missing
+* Missing mandatory fields
+* Invalid extracted values
+* Schema validation
+* Null handling
+
+---
+
+### Kafka Publishing
+
+Validate:
+
+* Kafka broker unavailable
+* Retry mechanism
+* Idempotent producer
+* Duplicate message prevention
+* Topic validation
+* Serialization failures
+* DLQ topic handling
+* Message ordering
+* Producer acknowledgement strategy
+
+---
+
+### MongoDB Status Update
+
+Ensure:
+
+* Status update happens only after successful Kafka publish
+* Failure reason is stored
+* Retry count incremented
+* Last processed timestamp updated
+* Partial failure handling exists
+* Atomic status transitions are used
+
+---
+
+## 3. Error Handling & Edge Cases
+
+Provide all possible edge cases and expected handling for:
+
+### Concurrency
+
+* Multiple instances picking same record
+* Service restart during processing
+* Crash after Kafka publish but before DB update
+* Long-running stuck records
+
+### Data Issues
+
+* Missing S3 path
+* Invalid Mongo document
+* Duplicate records
+* Null values
+* Unexpected PDF structure
+
+### Infrastructure Failures
+
+* MongoDB connection loss
+* S3 throttling
+* Kafka downtime
+* Disk space issues
+* Memory spikes
+* Network interruptions
+
+### Security
+
+* Sensitive data exposure in logs
+* Secret management
+* Access validation
+* Encrypted temporary storage
+
+---
+
+## 4. Suggest Better Architecture (if applicable)
+
+Review whether current architecture is optimal.
+
+Suggest improvements using:
+
+* Event-driven architecture
+* Kafka consumer groups
+* Retry topics
+* DLQ topics
+* Outbox pattern
+* Saga pattern
+* Async processing
+* Worker queues
+* Circuit breakers
+* Bulkhead pattern
+* Backpressure handling
+
+Also suggest whether:
+
+* MongoDB polling is good enough
+* Kafka should trigger downstream processing
+* State machine pattern would help
+* Separate microservices are needed
+
+---
+
+## 5. Code Review Expectations
+
+Review code for:
+
+* Clean code practices
+* SOLID principles
+* Exception hierarchy
+* Proper logging
+* Metrics/tracing
+* Thread safety
+* Resource cleanup
+* Null safety
+* Config externalization
+* Reusability
+* Testability
+
+---
+
+## 6. Testing Coverage
+
+Suggest:
+
+* Unit test scenarios
+* Integration test scenarios
+* Failure simulation tests
+* Load tests
+* Retry validation tests
+* Concurrency tests
+* Chaos testing scenarios
+
+---
+
+## 7. Expected Deliverables
+
+Provide:
+
+1. Improved workflow diagram/flow
+2. Identified gaps/issues
+3. Suggested architecture improvements
+4. Error handling strategy
+5. Edge case checklist
+6. Sample improved pseudocode
+7. Recommended status model
+8. Retry/DLQ strategy
+9. Production best practices
+10. Monitoring & alerting recommendations
+
+---
+
+## Technology Stack
+
+Assume:
+
+* Java + Spring Boot
+* MongoDB
+* AWS S3
+* Kafka
+* PDF processing libraries
+* Multi-instance/microservice deployment
+* Production-scale enterprise system
+
+Generate detailed technical recommendations with enterprise-grade best practices and sample implementation ideas where applicable.
